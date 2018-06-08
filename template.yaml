@@ -159,7 +159,7 @@ Resources:
         {
           "version": "2017-02-28",
           "operation": "GET",
-          "path": "/sessions/doc/_search",
+          "path": "/id/sessions/_search",
           "params": {
             "headers": {},
             "queryString": {},
@@ -167,20 +167,24 @@ Resources:
               "from": 0,
               "size": 10,
               "query": {
-                "match": {
-                  "title": ${ctx.args.text}
+                "multi_match": {
+                  "query": "${ctx.args.text}",
+                  "fields": [ "Title", "Description" ]
                 }
               }
             }
           }
         }
       ResponseMappingTemplate: |
-        [
-          #foreach($entry in $context.result.hits.hits)
-          #if( $velocityCount > 1 ) , #end
-          $utils.toJson($entry.get("_source"))
-          #end
-        ]
+        {
+          "sessions": [
+                        #foreach($entry in $context.result.hits.hits)
+                        #if( $velocityCount > 1 ) , #end
+                        $utils.toJson($entry.get("_source"))
+                        #end
+                      ],
+          "nextToken": $util.toJson($util.defaultIfNullOrBlank($ctx.result.nextToken, null))
+        }
 
 
   CreateSessionMutationResolver:
@@ -328,7 +332,8 @@ Resources:
       Role: !GetAtt StreamFunctionServiceRole.Arn
       Environment:
         Variables:
-          ELASTICSEARCH_DOMAIN: !GetAtt ESSessionsDomain.DomainEndpoint
+          #ELASTICSEARCH_DOMAIN: !GetAtt ESSessionsDomain.DomainEndpoint
+          ELASTICSEARCH_DOMAIN: search-session-manager-77nkmwoi2gs23enhhrikfaqgdq.us-east-2.es.amazonaws.com
           ELASTICSEARCH_INDEX: sessions
       Events:
         Stream:
@@ -433,6 +438,7 @@ Resources:
             Principal: 
               AWS:
                 - !GetAtt AppSyncServiceRole.Arn
+                - !GetAtt StreamFunctionServiceRole.Arn
             Action:
               - es:ESHttpDelete
               - es:ESHttpHead
@@ -515,7 +521,7 @@ Resources:
               - es:ESHttpPost
               - es:ESHttpPut
             Resource:
-              - !GetAtt ESSessionsDomain.DomainArn
+              - !Sub ${ESSessionsDomain.DomainArn}/*
               # - !Sub arn:aws:es:${AWS::Region}:${AWS::AccountId}:domain/session-manager
 
   StreamFunctionServiceRole:
