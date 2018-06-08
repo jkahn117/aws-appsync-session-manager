@@ -29,13 +29,17 @@ exports.handler = async (event) => {
 
     if (record.eventName === 'INSERT') {
       let title = record.dynamodb.NewImage.Title.S
-      let description = record.dynamodb.NewImage.Description.S
+      let description = record.dynamodb.NewImage.Description.S || ''
 
       try {
         await postToElasticSearch(sessionId, {
-          sessionId: sessionId,
-          title: title,
-          description: description
+          SessionId: sessionId,
+          Title: record.dynamodb.NewImage.Title.S,
+          StartTime: record.dynamodb.NewImage.StartTime.S,
+          EndTime: record.dynamodb.NewImage.EndTime.S,
+          Description: description,
+          SessionType: record.dynamodb.NewImage.SessionType.S,
+          CreatedBy: record.dynamodb.NewImage.CreatedBy.S
         })
       } catch (e) {
         console.error(`[ERROR] ${e.message}`)
