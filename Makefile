@@ -1,3 +1,5 @@
+MY_EMAIL ?= me@example.com
+
 AWS_BUCKET_NAME ?= jkahn-appsync-session-manager
 AWS_STACK_NAME ?= appsync-session-manager
 AWS_REGION ?= us-east-2
@@ -50,12 +52,39 @@ outputs:
 	@ make describe \
 			| jq -r '.Stacks[0].Outputs'
 
-cleanup:
-	@ rm $(SAM_PACKAGED_TEMPLATE)
-
-setup:
+## Loads sample session data to the DynamoDB table
+load-session-data:
 	@ node setup/setup.js
 
 
+## Helper functions to create a Session Manager user and editor in Cognito
+create-user:
+	@ aws cognito-idp sign-up \
+				--region $(AWS_REGION) \
+				--client-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoClientId") | .OutputValue') \
+				--username user --password NewPassword1% \
+				--user-attributes Name=email,Value=$(MY_EMAIL) Name=name,Value=user
 
-# add setup of DDB data, cognito?
+	@ aws cognito-idp admin-confirm-sign-up \
+				--region $(AWS_REGION) \
+				--user-pool-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoUserPoolId") | .OutputValue') \
+				--username user
+
+create-editor:
+	@ aws cognito-idp sign-up \
+				--region $(AWS_REGION) \
+				--client-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoClientId") | .OutputValue') \
+				--username editor --password NewPassword1% \
+				--user-attributes Name=email,Value=$(MY_EMAIL) Name=name,Value=editor
+
+	@ aws cognito-idp admin-confirm-sign-up \
+				--region $(AWS_REGION) \
+				--user-pool-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoUserPoolId") | .OutputValue') \
+				--username editor
+
+	@ aws cognito-idp admin-add-user-to-group \
+				--region $(AWS_REGION) \
+				--user-pool-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoUserPoolId") | .OutputValue') \
+				--group-name Editors \
+				--username editor
+
