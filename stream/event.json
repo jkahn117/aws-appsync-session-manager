@@ -1,0 +1,30 @@
+{
+    "Records": [
+        {
+            "eventID": "1", 
+            "eventVersion": "1.0", 
+            "dynamodb": {
+                "Keys": {
+                    "SessionId": {
+                        "S": "0B35CE51-82AE-4F57-B9EE-2896122EE1AE"
+                    }
+                }, 
+                "NewImage": {
+                    "Title": {
+                        "S": "Hot, New Session"
+                    }, 
+                    "Description": {
+                        "S": "A terrific session, discussing the benefits and drawbacks of cloud computing."
+                    }
+                }, 
+                "StreamViewType": "NEW_AND_OLD_IMAGES", 
+                "SequenceNumber": "111", 
+                "SizeBytes": 26
+            }, 
+            "awsRegion": "us-east-2", 
+            "eventName": "INSERT", 
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899", 
+            "eventSource": "aws:dynamodb"
+        }
+    ]
+}

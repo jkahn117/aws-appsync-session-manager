@@ -1,0 +1,71 @@
+type Mutation {
+	createSession(Session: SessionInput!): Session
+		@aws_auth(cognito_groups: ["Editors"])
+	updateSession(SessionId: ID!, Session: SessionInput): Session
+		@aws_auth(cognito_groups: ["Editors"])
+	deleteSession(SessionId: ID!): Session
+		@aws_auth(cognito_groups: ["Editors"])
+	scheduleSession(SessionId: ID!): UserSchedule
+	removeSession(SessionId: ID!): UserSchedule
+}
+
+type Query {
+	userSchedule: UserSchedule
+	allSessions(nextToken: String): SessionConnection
+	getSession(SessionId: ID!): Session
+	search(text: String!): SessionConnection
+}
+
+type Session {
+	SessionId: ID!
+	Title: String!
+	StartTime: String!
+	EndTime: String!
+	Description: String
+	SessionType: SessionType!
+	CreatedBy: String!
+}
+
+type SessionConnection {
+	sessions: [Session!]!
+	nextToken: String
+}
+
+input SessionInput {
+	Title: String!
+	StartTime: String!
+	EndTime: String!
+	Description: String
+	SessionType: SessionType!
+}
+
+enum SessionType {
+	Breakout
+	Workshop
+	Builder
+	Brainstorm
+}
+
+type User {
+	Username: String!
+	Email: String!
+}
+
+type UserSchedule {
+	User: User!
+	Sessions: [Session]
+	LastUpdated: String!
+}
+
+type Subscription {
+	onScheduleChange(UserId: ID!): UserSchedule
+		@aws_subscribe(mutations: [ "scheduleSession", "removeSession" ])
+	onNewSession: Session
+		@aws_subscribe(mutations: [ "createSession" ])
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+	subscription: Subscription
+}

@@ -1,0 +1,16 @@
+{
+  "name": "aws-appsync-session-manager-setup",
+  "version": "1.0.0",
+  "description": "Setup fake data for AWS AppSync Session Manager demo",
+  "main": "setup.js",
+  "scripts": {
+    "setup": "node setup.js"
+  },
+  "author": "jkahn@",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws-sdk": "^2.251.1",
+    "faker": "^4.1.0",
+    "uuid": "^3.2.1"
+  }
+}

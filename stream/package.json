@@ -1,0 +1,12 @@
+{
+  "name": "aws-appsync-session-manager-stream",
+  "version": "1.0.0",
+  "description": "Consumes DynamoDB stream, pushing data to ElasicSearch",
+  "main": "index.js",
+  "author": "jkahn@",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "aws4": "^1.7.0",
+    "axios": "^0.18.0"
+  }
+}
