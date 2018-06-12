@@ -15,9 +15,21 @@
                     }, 
                     "Description": {
                         "S": "A terrific session, discussing the benefits and drawbacks of cloud computing."
+                    },
+                    "StartTime": {
+                        "S": "2018-06-06T09:51:51.803Z"
+                    },
+                    "EndTime": {
+                        "S": "2018-06-06T10:36:51.803Z"
+                    },
+                    "SessionType": {
+                        "S": "Breakout"
+                    },
+                    "CreatedBy": {
+                        "S": "Josh"
                     }
                 }, 
-                "StreamViewType": "NEW_AND_OLD_IMAGES", 
+                "StreamViewType": "NEW_IMAGES", 
                 "SequenceNumber": "111", 
                 "SizeBytes": 26
             }, 

@@ -1,0 +1,22 @@
+{
+    "Records": [
+        {
+            "eventID": "3", 
+            "eventVersion": "1.0", 
+            "dynamodb": {
+                "Keys": {
+                    "SessionId": {
+                        "S": "0B35CE51-82AE-4F57-B9EE-2896122EE1AE"
+                    }
+                }, 
+                "SizeBytes": 38, 
+                "SequenceNumber": "333", 
+                "StreamViewType": "NEW_IMAGES"
+            }, 
+            "awsRegion": "us-east-1", 
+            "eventName": "REMOVE", 
+            "eventSourceARN": "arn:aws:dynamodb:us-east-1:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899", 
+            "eventSource": "aws:dynamodb"
+        }
+    ]
+}
