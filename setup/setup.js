@@ -65,8 +65,8 @@ for (let session of catalog) {
     SessionId: uuid(),
     Title: session.title,
     Description: session.description,
-    StartTime: startTime.toISOString(),
-    EndTime: new Date(startTime.getTime() + 45 * 60000).toISOString(),
+    StartTime: startTime.getTime(),
+    EndTime: new Date(startTime.getTime() + 45 * 60000).getTime(),
     SessionType: session.sessionType,
     CreatedBy: faker.name.firstName()
   }

@@ -196,19 +196,21 @@ Resources:
       FieldName: createSession
       DataSourceName: !GetAtt SessionsTableDataSource.Name
       RequestMappingTemplate: |
+        #set( $startTime = $util.time.parseFormattedToEpochMilliSeconds($ctx.args.Session.StartTime, "yyyy-MM-dd HH:mm:ssZ") )
+        #set( $endTime = $util.time.parseFormattedToEpochMilliSeconds($ctx.args.Session.EndTime, "yyyy-MM-dd HH:mm:ssZ") )
         {
           "version": "2017-02-28",
           "operation": "PutItem",
           "key": {
-            "SessionId": $util.autoId()
+            "SessionId": $util.dynamodb.toDynamoDBJson($util.autoId())
           },
           "attributeValues": {
             "CreatedBy": $util.dynamodb.toDynamoDBJson($ctx.identity.username),
-            "Description": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.Description, "")),
-            "EndTime": $util.dynamodb.toDynamoDBJson($ctx.args.EndTime),
-            "SessionType": $util.dynamodb.toDynamoDBJson($ctx.args.SessionType),
-            "StartTime": $util.dynamodb.toDynamoDBJson($ctx.args.StartTime),
-            "Title": $util.dynamodb.toDynamoDBJson($ctx.args.Title)
+            "Description": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.Session.Description, "")),
+            "EndTime": $util.dynamodb.toDynamoDBJson($endTime),
+            "SessionType": $util.dynamodb.toDynamoDBJson($ctx.args.Session.SessionType),
+            "StartTime": $util.dynamodb.toDynamoDBJson($startTime),
+            "Title": $util.dynamodb.toDynamoDBJson($ctx.args.Session.Title)
           }
         }
       ResponseMappingTemplate: |
@@ -332,8 +334,7 @@ Resources:
       Role: !GetAtt StreamFunctionServiceRole.Arn
       Environment:
         Variables:
-          #ELASTICSEARCH_DOMAIN: !GetAtt ESSessionsDomain.DomainEndpoint
-          ELASTICSEARCH_DOMAIN: search-session-manager-77nkmwoi2gs23enhhrikfaqgdq.us-east-2.es.amazonaws.com
+          ELASTICSEARCH_DOMAIN: !GetAtt ESSessionsDomain.DomainEndpoint
           ELASTICSEARCH_INDEX: sessions
       Events:
         Stream:

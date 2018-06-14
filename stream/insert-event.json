@@ -17,10 +17,10 @@
                         "S": "A terrific session, discussing the benefits and drawbacks of cloud computing."
                     },
                     "StartTime": {
-                        "S": "2018-06-06T09:51:51.803Z"
+                        "N": 1528920000000
                     },
                     "EndTime": {
-                        "S": "2018-06-06T10:36:51.803Z"
+                        "N": 1528922700000
                     },
                     "SessionType": {
                         "S": "Breakout"

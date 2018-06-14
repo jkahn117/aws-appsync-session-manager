@@ -11,8 +11,8 @@ const postToElasticSearch = async(sessionId, record) => {
   let session = {
     SessionId: sessionId,
     Title: record.dynamodb.NewImage.Title.S,
-    StartTime: record.dynamodb.NewImage.StartTime.S,
-    EndTime: record.dynamodb.NewImage.EndTime.S,
+    StartTime: Number(record.dynamodb.NewImage.StartTime.N),
+    EndTime: Number(record.dynamodb.NewImage.EndTime.N),
     Description: record.dynamodb.NewImage.Description.S || '',
     SessionType: record.dynamodb.NewImage.SessionType.S,
     CreatedBy: record.dynamodb.NewImage.CreatedBy.S
@@ -26,6 +26,8 @@ const postToElasticSearch = async(sessionId, record) => {
     body: JSON.stringify(session), // aws4 prefers 'body' to sign
     data: session // axios sends 'data'
   }
+
+  console.log(JSON.stringify(session))
 
   return await axios(aws4.sign(params))
 }
@@ -43,11 +45,10 @@ const removeFromElasticSearch = async(sessionId) => {
 }
 
 exports.handler = async (event) => {
-  // console.log(util.inspect(event, { depth: 5 }))
-
   for(let record of event.Records) {
-    // console.log(util.inspect(record, { depth: 5 }))
+    console.log(util.inspect(record, { depth: 5 }))
     let sessionId = record.dynamodb.Keys.SessionId.S
+    console.log(`${record.eventName} record: ${sessionId}`)
 
     switch(record.eventName) {
       case 'INSERT':
@@ -55,7 +56,7 @@ exports.handler = async (event) => {
         try {
           await postToElasticSearch(sessionId, record)
         } catch(e) {
-          console.error(e)
+          console.error(util.inspect(e, { depth: 5 }))
           throw new Error(e)
         }
         break
@@ -63,7 +64,7 @@ exports.handler = async (event) => {
         try {
           await removeFromElasticSearch(sessionId)
         } catch(e) {
-          console.error(e)
+          console.error(util.inspect(e, { depth: 5 }))
           throw new Error(e)
         }
         
