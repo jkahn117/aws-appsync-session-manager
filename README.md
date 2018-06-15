@@ -212,7 +212,7 @@ Let's verify both that the session was created in the DynamoDB sessions table an
 
 ```graphql
 query Search {
-  search(text: "grahql") {
+  search(text: "graphql") {
     sessions {
       SessionId
       Title
