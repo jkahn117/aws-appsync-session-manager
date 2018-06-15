@@ -29,7 +29,7 @@ This project requires the following to get started:
 
 We will use AWS CloudFormation (with the AWS Serverless Application Model) to package and deploy our AWS resources. These include AWS AppSync data sources, resolvers, and schema as well as the underlying resources. The high-level architecture is as follows:
 
--- INSERT DIAGRAM --
+![AppSync Session Manager Architecture](./images/session-manager-architecture.png)
 
 To simplify deployment, the project includes a [Makefile](./Makefile) that wraps deployment and helper commands.
 
