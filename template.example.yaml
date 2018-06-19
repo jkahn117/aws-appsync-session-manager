@@ -35,7 +35,7 @@ Resources:
     Description: Session Manager GraphQL schema
     Properties:
       ApiId: !GetAtt SessionManagerApi.ApiId
-      DefinitionS3Location: s3://jkahn-appsync-session-manager/schema.graphql
+      DefinitionS3Location: s3://INSERT_LOCATION/schema.graphql
 
   UserScheduleQueryResolver:
     Type: AWS::AppSync::Resolver
