@@ -50,8 +50,8 @@ Next, we'll deploy the project to our AWS environment. *Please note that this ca
 # create new Amazon S3 bucket
 $ make create-bucket
 
-# create template.yaml from template.yaml.example with your bucket name
-$ make configure
+# install NPM modules and create template.yaml for your project
+$ make setup
 
 # deploy project (again, this can take 30 minutes)
 $ make deploy

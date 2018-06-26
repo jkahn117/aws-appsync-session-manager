@@ -18,7 +18,9 @@ create-bucket:
 	      --region $(AWS_REGION) \
 	      --create-bucket-configuration LocationConstraint=$(AWS_REGION)
 
-configure:
+setup:
+	@ cd stream && npm install
+	@ cd ..
 	@ sed -i '.bak' 's/$(SCHEMA_SEARCH)/$(SCHEMA_REPLACE)/g' template.example.yaml
 	@ mv template.example.yaml template.yaml
 
