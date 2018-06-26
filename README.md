@@ -8,6 +8,8 @@ The goals of this project are to:
 2. Build all AWS resources via [AWS CloudFormation](https://aws.amazon.com/cloudformation/).
 3. Leverage AWS AppSync integration with [Amazon Cognito](https://aws.amazon.com/cognito/) to secure resources and scope mutations to appropriate roles.
 
+Blog Post: [Building a Unified Backend with AWS AppSync](https://medium.com/@joshua.a.kahn/building-a-unified-backend-with-aws-appsync-553263ececde)
+
 ## Getting Started
 
 To get started, clone this repository:
