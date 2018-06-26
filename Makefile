@@ -53,6 +53,10 @@ outputs:
 	@ make describe \
 	      | jq -r '.Stacks[0].Outputs'
 
+cleanup:
+	@ aws cloudformation delete-stack \
+	      --stack-name $(AWS_STACK_NAME)
+
 ## Loads sample session data to the DynamoDB table
 load-session-data:
 	@ node setup/setup.js

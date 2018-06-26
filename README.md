@@ -254,7 +254,7 @@ mutation DeleteSession {
 To clean-up all resources associated with this project (i.e. delete all resources), enter the following:
 
 ```bash
-$ make delete-stack
+$ make cleanup
 ```
 
 ## Managing schema.graphql
