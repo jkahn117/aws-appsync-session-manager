@@ -12,6 +12,10 @@ Parameters:
     MaxLength: 20
     Type: String
 
+  ProjectName:
+    Type: String
+    Default: aws-appsync-session-manager
+
 Resources:
   ### AppSync ###
   SessionManagerApi:
@@ -566,13 +570,26 @@ Outputs:
   ApiId:
     Description: GraphQL API ID
     Value: !GetAtt SessionManagerApi.ApiId
+    Export:
+      Name: !Sub "${ProjectName}-sessions-manager-api"
   CognitoUserPoolId:
     Description: Cognito User Pool ID
     Value: !Ref SessionManagerUserPool
+    Export:
+      Name: !Sub "${ProjectName}-user-pool-id"
   CognitoClientId:
     Description: Cognito App Client ID
     Value: !Ref UserPoolClient
   ElasticsearchDomain:
     Description: Elasticsearch Domain
     Value: !Sub https://${ESSessionsDomain.DomainEndpoint}
-    
+  SessionsTableStream:
+    Description: ARN for SessionsTable Stream
+    Value: !GetAtt DDBSessionsTable.StreamArn
+    Export:
+      Name: !Sub "${ProjectName}-sessions-stream"
+  UserScheduleTableStream:
+    Description: ARN for UserScheduleTable Stream
+    Value: !GetAtt DDBUserScheduleTable.StreamArn
+    Export:
+      Name: !Sub "${ProjectName}-user-schedule-stream"    
