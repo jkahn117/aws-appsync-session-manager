@@ -605,3 +605,8 @@ Outputs:
     Value: !GetAtt AppSyncServiceRole.Arn
     Export:
       Name: !Sub "${ProjectName}-appsync-service-role-arn"
+  AppSyncServiceRoleName:
+    Description: ARN for AppSync Service Role
+    Value: !Ref AppSyncServiceRole
+    Export:
+      Name: !Sub "${ProjectName}-appsync-service-role"
