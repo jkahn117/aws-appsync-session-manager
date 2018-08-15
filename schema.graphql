@@ -19,22 +19,22 @@ type Query {
 type Session {
 	SessionId: ID!
 	Title: String!
-	StartTime: String!
-	EndTime: String!
+	StartTime: AWSDateTime
+	EndTime: AWSDateTime
 	Description: String
 	SessionType: SessionType!
 	CreatedBy: String!
 }
 
 type SessionConnection {
-	sessions: [Session!]!
+	sessions: [Session]
 	nextToken: String
 }
 
 input SessionInput {
 	Title: String!
-	StartTime: String!
-	EndTime: String!
+	StartTime: AWSDateTime!
+	EndTime: AWSDateTime!
 	Description: String
 	SessionType: SessionType!
 }

@@ -63,6 +63,7 @@ Resources:
       ResponseMappingTemplate: |
         $util.toJson($ctx.result)
 
+  # TODO: is a PHONY session id a reasonable approach to avoid an error?
   UserScheduleTypeResolver:
     Type: AWS::AppSync::Resolver
     DependsOn: SessionManagerSchema
@@ -79,6 +80,12 @@ Resources:
           $util.qr($ids.add($map))
         #end
 
+        #if($ids.isEmpty())
+          #set($map = {})
+          $util.qr($map.put("SessionId", $util.dynamodb.toString("PHONY")))
+          $util.qr($ids.add($map))
+        #end
+
         {
           "version" : "2018-05-29",
           "operation" : "BatchGetItem",
@@ -90,7 +97,11 @@ Resources:
           }
         }
       ResponseMappingTemplate: !Sub |
-        $util.toJson($ctx.result.data.${DDBSessionsTable})
+        #if($ctx.source.items.isEmpty())
+          $util.toJson([])
+        #else
+          $util.toJson($ctx.result.data.${DDBSessionsTable})
+        #end
 
   UserScheduleUserTypeResolver:
     Type: AWS::AppSync::Resolver
@@ -200,8 +211,6 @@ Resources:
       FieldName: createSession
       DataSourceName: !GetAtt SessionsTableDataSource.Name
       RequestMappingTemplate: |
-        #set( $startTime = $util.time.parseFormattedToEpochMilliSeconds($ctx.args.Session.StartTime, "yyyy-MM-dd HH:mm:ssZ") )
-        #set( $endTime = $util.time.parseFormattedToEpochMilliSeconds($ctx.args.Session.EndTime, "yyyy-MM-dd HH:mm:ssZ") )
         {
           "version": "2017-02-28",
           "operation": "PutItem",
@@ -211,9 +220,9 @@ Resources:
           "attributeValues": {
             "CreatedBy": $util.dynamodb.toDynamoDBJson($ctx.identity.username),
             "Description": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.Session.Description, "")),
-            "EndTime": $util.dynamodb.toDynamoDBJson($endTime),
+            "EndTime": $util.dynamodb.toDynamoDBJson($ctx.args.Session.EndTime),
             "SessionType": $util.dynamodb.toDynamoDBJson($ctx.args.Session.SessionType),
-            "StartTime": $util.dynamodb.toDynamoDBJson($startTime),
+            "StartTime": $util.dynamodb.toDynamoDBJson($ctx.args.Session.StartTime),
             "Title": $util.dynamodb.toDynamoDBJson($ctx.args.Session.Title)
           }
         }
@@ -336,6 +345,7 @@ Resources:
       Runtime: nodejs8.10
       Description: Processes DynamoDB stream, writing to Elasticsearch
       Role: !GetAtt StreamFunctionServiceRole.Arn
+      Timeout: 10
       Environment:
         Variables:
           ELASTICSEARCH_DOMAIN: !GetAtt ESSessionsDomain.DomainEndpoint
@@ -574,11 +584,6 @@ Outputs:
     Value: !GetAtt SessionManagerApi.ApiId
     Export:
       Name: !Sub "${ProjectName}-sessions-manager-api"
-  CognitoUserPoolId:
-    Description: Cognito User Pool ID
-    Value: !Ref SessionManagerUserPool
-    Export:
-      Name: !Sub "${ProjectName}-user-pool-id"
   CognitoClientId:
     Description: Cognito App Client ID
     Value: !Ref UserPoolClient
@@ -595,3 +600,8 @@ Outputs:
     Value: !GetAtt DDBUserScheduleTable.StreamArn
     Export:
       Name: !Sub "${ProjectName}-user-schedule-stream"    
+  AppSyncServiceRoleArn:
+    Description: ARN for AppSync Service Role
+    Value: !GetAtt AppSyncServiceRole.Arn
+    Export:
+      Name: !Sub "${ProjectName}-appsync-service-role-arn"

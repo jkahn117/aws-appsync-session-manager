@@ -11,8 +11,8 @@ const postToElasticSearch = async(sessionId, record) => {
   let session = {
     SessionId: sessionId,
     Title: record.dynamodb.NewImage.Title.S,
-    StartTime: Number(record.dynamodb.NewImage.StartTime.N),
-    EndTime: Number(record.dynamodb.NewImage.EndTime.N),
+    StartTime: record.dynamodb.NewImage.StartTime.S,
+    EndTime: record.dynamodb.NewImage.EndTime.S,
     Description: record.dynamodb.NewImage.Description.S || '',
     SessionType: record.dynamodb.NewImage.SessionType.S,
     CreatedBy: record.dynamodb.NewImage.CreatedBy.S
@@ -65,9 +65,8 @@ exports.handler = async (event) => {
           await removeFromElasticSearch(sessionId)
         } catch(e) {
           console.error(util.inspect(e, { depth: 5 }))
-          throw new Error(e)
+          //throw new Error(e)
         }
-        
         break
       default:
         throw new Error(`Unsupported event ${record.eventName}`)
