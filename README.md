@@ -52,8 +52,8 @@ Next, we'll deploy the project to our AWS environment. *Please note that this ca
 # create new Amazon S3 bucket
 $ make create-bucket
 
-# install NPM modules and create template.yaml for your project
-$ make setup
+# install NPM modules for your project
+$ make configure
 
 # deploy project (again, this can take 30 minutes)
 $ make deploy
@@ -258,10 +258,6 @@ To clean-up all resources associated with this project (i.e. delete all resource
 ```bash
 $ make cleanup
 ```
-
-## Managing schema.graphql
-
-In this project, you might notice that our GraphQL schema is managed in [schema.graphql](./schema.graphql) that is uploaded to your S3 bucket as part of the `deploy` (or `upload-schema`) task. AWS CloudFormation provides the option to define your schema inline (see `Definition` attribute [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appsync-graphqlschema.html#cfn-appsync-graphqlschema-definition)); however, this approach [does not play well](https://github.com/awslabs/serverless-application-model/issues/461) with SAM. In the end, externalizing the schema made it clear where / how the schema is defined.
 
 ## Further work
 

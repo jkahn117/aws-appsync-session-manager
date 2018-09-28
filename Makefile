@@ -7,64 +7,60 @@ AWS_REGION ?= us-east-2
 SAM_TEMPLATE = template.yaml
 SAM_PACKAGED_TEMPLATE = packaged.yaml
 
-SCHEMA_SEARCH = DefinitionS3Location: s3:\/\/INSERT_LOCATION
-SCHEMA_REPLACE = DefinitionS3Location: s3:\/\/$(AWS_BUCKET_NAME)
-
-SCHEMA := $(shell cat schema.graphql)
-
+.PHONY: create-bucket
 create-bucket:
 	@ aws s3api create-bucket \
 	      --bucket $(AWS_BUCKET_NAME) \
 	      --region $(AWS_REGION) \
 	      --create-bucket-configuration LocationConstraint=$(AWS_REGION)
 
-setup:
+.PHONY: configure
+configure:
 	@ cd stream && npm install
 	@ cd ..
-	@ sed -i '.bak' 's/$(SCHEMA_SEARCH)/$(SCHEMA_REPLACE)/g' template.example.yaml
-	@ mv template.example.yaml template.yaml
 
-upload-schema:
-	@ aws s3 cp \
-	      schema.graphql \
-	      s3://$(AWS_BUCKET_NAME)/schema.graphql
-
+.PHONY: package
 package:
-	@ aws cloudformation package \
+	@ sam package \
 	      --template-file $(SAM_TEMPLATE) \
 	      --s3-bucket $(AWS_BUCKET_NAME) \
 	      --region $(AWS_REGION) \
 	      --output-template-file $(SAM_PACKAGED_TEMPLATE)
 
+.PHONY: deploy
 deploy:
 	@ make package
-	@ make upload-schema
-	@ aws cloudformation deploy \
+	@ sam deploy \
 	      --template-file $(SAM_PACKAGED_TEMPLATE) \
 	      --region $(AWS_REGION) \
 	      --capabilities CAPABILITY_NAMED_IAM \
 	      --stack-name $(AWS_STACK_NAME) \
 	      --force-upload
 
+.PHONY: describe
 describe:
 	@ aws cloudformation describe-stacks \
 	      --region $(AWS_REGION) \
 	      --stack-name $(AWS_STACK_NAME)
 
+.PHONY: outputs
 outputs:
 	@ make describe \
 	      | jq -r '.Stacks[0].Outputs'
 
+.PHONY: cleanup
 cleanup:
 	@ aws cloudformation delete-stack \
 	      --stack-name $(AWS_STACK_NAME)
 
 ## Loads sample session data to the DynamoDB table
+.PHONY: load-session-data
 load-session-data:
 	@ node setup/setup.js
 
 
 ## Helper functions to create a Session Manager user and editor in Cognito
+.PHONY: create-user
 create-user:
 	@ aws cognito-idp sign-up \
 	      --region $(AWS_REGION) \
@@ -77,6 +73,7 @@ create-user:
 	      --user-pool-id $(shell make outputs | jq '.[] | select(.OutputKey=="CognitoUserPoolId") | .OutputValue') \
 	      --username user
 
+.PHONY: create-editor
 create-editor:
 	@ aws cognito-idp sign-up \
 	      --region $(AWS_REGION) \
