@@ -2,4 +2,3 @@ packaged.yaml
 node_modules
 NOTES.md
 .DS_Store
-package-lock.json
