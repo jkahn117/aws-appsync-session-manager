@@ -7,6 +7,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "aws4": "^1.7.0",
-    "axios": "^0.18.0"
+    "axios": "^0.18.1"
   }
 }
