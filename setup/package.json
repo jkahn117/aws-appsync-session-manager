@@ -9,7 +9,7 @@
   "author": "jkahn@",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.251.1",
+    "aws-sdk": "^2.814.0",
     "faker": "^4.1.0"
   }
 }
